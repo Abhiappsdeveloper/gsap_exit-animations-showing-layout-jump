@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Exit animations showing layout jump</title>
+    <link rel='stylesheet' href='https://codepen.io/GreenSock/pen/xxmzBrw.css'>
+    <style>
+        .app {
+            padding: 10px;
+        }
+
+        .box {
+            margin: 10px 10px 0 0;
+            padding: 10px;
+        }
+
+        .boxes {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="root" class="panel center"></div>
+    <!-- layout jump solved in this codepen https://codepen.io/GreenSock/pen/MWmqzjE -->
+    <script src='https://codepen.io/GreenSock/pen/NWoLXRG.js'></script>
+    <script>
+        import React, {
+            useState,
+            useLayoutEffect,
+            useEffect
+        } from
+            "https://esm.sh/react@19.1.0";
+        import ReactDOM from "https://esm.sh/react-dom@19.1.0/client";
+        import gsap from "https://esm.sh/gsap";
+        import { useGSAP } from "https://esm.sh/@gsap/react?deps=react@19.1.0";
+
+        gsap.registerPlugin(useGSAP);
+
+        console.clear();
+
+        function App() {
+            const [items, setItems] = useState(() => [
+                { id: 0, color: "blue" },
+                { id: 1, color: "red" },
+                { id: 2, color: "purple" }]);
+
+            const { context, contextSafe } = useGSAP();
+
+            const remove = contextSafe((item, target) => {
+                gsap.to(target, {
+                    opacity: 0,
+                    onComplete: () => removeItem(item)
+                });
+
+            });
+
+            const removeItem = value => {
+                setItems(prev => prev.filter(item => item !== value));
+            };
+
+            return /*#__PURE__*/(
+                React.createElement("div", { className: "app boxes" },
+                    items.map((item) => /*#__PURE__*/
+                        React.createElement("div", {
+                            className: `box gradient-${item.color}`,
+                            key: item.id,
+                            onClick: e => remove(item, e.currentTarget)
+                        }, "Click Me"))));
+
+
+
+
+
+
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render( /*#__PURE__*/React.createElement(App, null));
+    </script>
+
+</body>
+
+</html>
